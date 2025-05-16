@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador UnlimPlay.to</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0d0d0d, #1a1a1a);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #ff4c4c;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: #2a2a2a;
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #ff4c4c;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      margin: 10px 5px 0 5px;
+      background-color: #ff4c4c;
+      color: #121212;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #e13a3a;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      background-color: #1e1e1e;
+      padding: 15px;
+      border-radius: 10px;
+      word-break: break-word;
+      font-size: 14px;
+      display: none;
+    }
+
+    iframe {
+      width: 100%;
+      height: 300px;
+      margin-top: 25px;
+      border: none;
+      border-radius: 12px;
+      background-color: #000;
+    }
+
+    @media (max-width: 480px) {
+      iframe {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎥 Generador de Enlace UnlimPlay.to</h2>
+    <input type="text" id="videoId" placeholder="ID del video...">
+    <button class="btn" onclick="generarEnlace()">Generar Enlace</button>
+
+    <div id="resultado" class="result-box">
+      <span id="enlaceGenerado"></span>
+      <br>
+      <button class="btn" onclick="copiarEnlace()">Copiar enlace</button>
+    </div>
+
+    <iframe id="visor" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    function generarEnlace() {
+      const id = document.getElementById('videoId').value.trim();
+      const resultado = document.getElementById('resultado');
+      const visor = document.getElementById('visor');
+      const span = document.getElementById('enlaceGenerado');
+
+      if (id) {
+        const enlace = `https://unlimplayer.top/embed/${id}`;
+        span.innerText = enlace;
+        resultado.style.display = 'block';
+        visor.src = enlace;
+      } else {
+        span.innerText = '⚠️ Por favor, introduce un ID válido.';
+        visor.src = '';
+        resultado.style.display = 'block';
+      }
+    }
+
+    function copiarEnlace() {
+      const texto = document.getElementById('enlaceGenerado').innerText;
+      if (texto.startsWith('http')) {
+        navigator.clipboard.writeText(texto).then(() => {
+          alert('✅ Enlace copiado al portapapeles');
+        });
+      }
+    }
+  </script>
+</body>
+</html>
