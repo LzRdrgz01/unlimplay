@@ -1,25 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador UnlimPlay.to</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generador de Enlaces</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom right, #0d0d0d, #1a1a1a);
       color: #ffffff;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .tab-btn.active {
+      background-color: #ff4c4c;
+      color: #121212;
     }
 
     .container {
@@ -29,14 +51,12 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      width: 100%;
-      max-width: 500px;
       text-align: center;
+      display: none;
     }
 
-    h2 {
-      margin-bottom: 25px;
-      color: #ff4c4c;
+    .container.active {
+      display: block;
     }
 
     input {
@@ -70,6 +90,29 @@
       background-color: #e13a3a;
     }
 
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn-group .btn {
+      background-color: #2a2a2a;
+      color: #fff;
+      border: 2px solid transparent;
+      transition: background-color 0.3s, border-color 0.3s;
+      flex: 1;
+    }
+    .btn-group .btn:hover {
+      background-color: #ff6666;
+    }
+    .btn-group .btn.active {
+      background-color: #ff4c4c;
+      border-color: #ff1a1a;
+      color: #121212;
+    }
+
     .result-box {
       margin-top: 20px;
       background-color: #1e1e1e;
@@ -90,36 +133,122 @@
     }
 
     @media (max-width: 480px) {
-      iframe {
-        height: 220px;
-      }
+      iframe { height: 220px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>🎥 Generador de Enlace UnlimPlay.to</h2>
-    <input type="text" id="videoId" placeholder="ID del video...">
-    <button class="btn" onclick="generarEnlace()">Generar Enlace</button>
-
-    <div id="resultado" class="result-box">
-      <span id="enlaceGenerado"></span>
-      <br>
-      <button class="btn" onclick="copiarEnlace()">Copiar enlace</button>
+  <div class="panel">
+    <!-- Botones tipo pestaña -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="mostrarTab('unlim')">UnlimPlayer</button>
+      <button class="tab-btn" onclick="mostrarTab('reparar')">Reparar Enlace</button>
     </div>
 
-    <iframe id="visor" allowfullscreen></iframe>
+    <!-- Contenido Unlim -->
+    <div class="container active" id="tab-unlim">
+      <h2>🎥 Generar UnlimPlayer</h2>
+      <input type="text" id="videoIdUnlim" placeholder="ID del video...">
+      <button class="btn" onclick="generarUnlim()">Generar Enlace</button>
+      <div id="resultadoUnlim" class="result-box">
+        <span id="enlaceUnlim"></span><br>
+        <button class="btn" onclick="copiar('enlaceUnlim')">Copiar enlace</button>
+      </div>
+      <iframe id="visorUnlim" allowfullscreen></iframe>
+    </div>
+
+    <!-- Contenido Reparador -->
+    <div class="container" id="tab-reparar">
+      <h2>🔧 Reparar Enlace</h2>
+      <div class="btn-group">
+        <button class="btn" id="btnStreamwish" onclick="seleccionarOpcion('streamwish')">Streamwish</button>
+        <button class="btn" id="btnVidhide" onclick="seleccionarOpcion('vidhide')">Vidhide</button>
+      </div>
+      <input type="text" id="videoIdReparar" placeholder="Pega solo el ID...">
+      <button class="btn" onclick="repararEspecifico()">Reparar Enlace</button>
+      <div id="resultadoReparar" class="result-box">
+        <span id="enlaceReparado"></span><br>
+        <button class="btn" onclick="copiar('enlaceReparado')">Copiar enlace</button>
+      </div>
+      <iframe id="visorReparar" allowfullscreen></iframe>
+    </div>
   </div>
 
   <script>
-    function generarEnlace() {
-      const id = document.getElementById('videoId').value.trim();
-      const resultado = document.getElementById('resultado');
-      const visor = document.getElementById('visor');
-      const span = document.getElementById('enlaceGenerado');
+    function mostrarTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.container').forEach(div => div.classList.remove('active'));
 
-      if (id) {
-        const enlace = `https://unlimplayer.top/embed/${id}`;
+      if (tab === 'unlim') {
+        document.getElementById('tab-unlim').classList.add('active');
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      } else {
+        document.getElementById('tab-reparar').classList.add('active');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      }
+    }
+
+    function generarUnlim() {
+      const id = document.getElementById('videoIdUnlim').value.trim();
+      if (!id) {
+        alert('❗ Por favor, introduce un ID válido.');
+        return;
+      }
+      const enlace = `https://unlimplayer.top/embed/${id}`;
+      actualizarUI(id, enlace, 'resultadoUnlim', 'enlaceUnlim', 'visorUnlim');
+    }
+
+    // Variable para guardar la opción activa (streamwish o vidhide)
+    let opcionActiva = null;
+
+    function seleccionarOpcion(tipo) {
+      opcionActiva = tipo;
+
+      // Actualizar estilos activos
+      document.getElementById('btnStreamwish').classList.remove('active');
+      document.getElementById('btnVidhide').classList.remove('active');
+
+      if (tipo === 'streamwish') {
+        document.getElementById('btnStreamwish').classList.add('active');
+      } else if (tipo === 'vidhide') {
+        document.getElementById('btnVidhide').classList.add('active');
+      }
+
+      // Limpiar resultados y visor cuando se cambia la opción
+      document.getElementById('resultadoReparar').style.display = 'none';
+      document.getElementById('visorReparar').src = '';
+      document.getElementById('videoIdReparar').value = '';
+      document.getElementById('enlaceReparado').innerText = '';
+    }
+
+    function repararEspecifico() {
+      const id = document.getElementById('videoIdReparar').value.trim();
+
+      if (!opcionActiva) {
+        alert('❗ Por favor, selecciona Streamwish o Vidhide antes de generar.');
+        return;
+      }
+      if (!id) {
+        alert('❗ Por favor, introduce un ID válido.');
+        return;
+      }
+
+      let enlace = '';
+      if (opcionActiva === 'streamwish') {
+        enlace = `https://streamwish.to/e/${id}`;
+      } else if (opcionActiva === 'vidhide') {
+        enlace = `https://vidhidepro.com/v/${id}`;
+      }
+
+      actualizarUI(id, enlace, 'resultadoReparar', 'enlaceReparado', 'visorReparar');
+    }
+
+    function actualizarUI(id, enlace, resId, spanId, visorId) {
+      const resultado = document.getElementById(resId);
+      const span = document.getElementById(spanId);
+      const visor = document.getElementById(visorId);
+
+      if (id && enlace) {
         span.innerText = enlace;
         resultado.style.display = 'block';
         visor.src = enlace;
@@ -130,8 +259,8 @@
       }
     }
 
-    function copiarEnlace() {
-      const texto = document.getElementById('enlaceGenerado').innerText;
+    function copiar(spanId) {
+      const texto = document.getElementById(spanId).innerText;
       if (texto.startsWith('http')) {
         navigator.clipboard.writeText(texto).then(() => {
           alert('✅ Enlace copiado al portapapeles');
