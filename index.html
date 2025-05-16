@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generador de Enlaces</title>
+  <title>Generador y Reparador de Enlaces</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to bottom right, #0d0d0d, #1a1a1a);
       color: #ffffff;
       min-height: 100vh;
@@ -16,18 +16,15 @@
       justify-content: center;
       align-items: flex-start;
     }
-
     .panel {
       width: 100%;
       max-width: 600px;
     }
-
     .tabs {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
     }
-
     .tab-btn {
       flex: 1;
       padding: 12px;
@@ -38,12 +35,11 @@
       font-weight: bold;
       transition: background 0.3s;
     }
-
     .tab-btn.active {
-      background-color: #ff4c4c;
+      background-color: #00cc00; /* Verde que usabas antes */
       color: #121212;
+      border-color: #00cc00;
     }
-
     .container {
       background: rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(10px);
@@ -54,30 +50,28 @@
       text-align: center;
       display: none;
     }
-
     .container.active {
       display: block;
     }
-
-    input {
+    input[type="text"] {
       width: 100%;
       padding: 12px;
       border-radius: 10px;
       border: none;
-      background-color: #2a2a2a;
-      color: #ffffff;
+      background-color: #222;
+      color: #fff;
       margin-bottom: 15px;
       font-size: 16px;
+      transition: outline 0.3s;
     }
-
-    input:focus {
-      outline: 2px solid #ff4c4c;
+    input[type="text"]:focus {
+      outline: 2px solid #00cc00;
+      background-color: #1a1a1a;
     }
-
-    .btn {
+    button {
       padding: 12px 20px;
       margin: 10px 5px 0 5px;
-      background-color: #ff4c4c;
+      background-color: #00cc00;
       color: #121212;
       font-weight: bold;
       border: none;
@@ -85,44 +79,57 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
-    .btn:hover {
-      background-color: #e13a3a;
+    button:hover {
+      background-color: #009900;
     }
-
-    .btn-group {
+    .copy-btn {
+      background-color: #004d00;
+      border: 1px solid #00cc00;
+      margin-left: 10px;
+      color: white;
+      padding: 10px 15px;
+      font-weight: bold;
+    }
+    .copy-btn:hover {
+      background-color: #007700;
+    }
+    .selector, .btn-group {
       display: flex;
-      justify-content: center;
       gap: 10px;
       margin-bottom: 15px;
+      justify-content: center;
     }
-
-    .btn-group .btn {
-      background-color: #2a2a2a;
-      color: #fff;
-      border: 2px solid transparent;
-      transition: background-color 0.3s, border-color 0.3s;
+    .selector button, .btn-group .btn {
       flex: 1;
+      background-color: #222;
+      color: white;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 12px 0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s, border-color 0.3s;
     }
-    .btn-group .btn:hover {
-      background-color: #ff6666;
-    }
-    .btn-group .btn.active {
-      background-color: #ff4c4c;
-      border-color: #ff1a1a;
+    .selector button.active, .btn-group .btn.active {
+      background-color: #00cc00;
+      border-color: #009900;
       color: #121212;
     }
-
-    .result-box {
+    .selector button:hover, .btn-group .btn:hover {
+      background-color: #004d00;
+      color: #fff;
+    }
+    .result {
       margin-top: 20px;
-      background-color: #1e1e1e;
+      background-color: #111;
       padding: 15px;
       border-radius: 10px;
       word-break: break-word;
       font-size: 14px;
       display: none;
+      color: #00cc00;
+      text-align: center;
     }
-
     iframe {
       width: 100%;
       height: 300px;
@@ -130,45 +137,46 @@
       border: none;
       border-radius: 12px;
       background-color: #000;
+      box-shadow: 0 0 15px #00cc00aa;
     }
-
     @media (max-width: 480px) {
-      iframe { height: 220px; }
+      iframe {
+        height: 220px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="panel">
-    <!-- Botones tipo pestaña -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="mostrarTab('unlim')">UnlimPlayer</button>
+      <button class="tab-btn active" onclick="mostrarTab('unlim')">Unlimplay</button>
       <button class="tab-btn" onclick="mostrarTab('reparar')">Reparar Enlace</button>
     </div>
 
-    <!-- Contenido Unlim -->
-    <div class="container active" id="tab-unlim">
-      <h2>🎥 Generar UnlimPlayer</h2>
-      <input type="text" id="videoIdUnlim" placeholder="ID del video...">
-      <button class="btn" onclick="generarUnlim()">Generar Enlace</button>
-      <div id="resultadoUnlim" class="result-box">
-        <span id="enlaceUnlim"></span><br>
-        <button class="btn" onclick="copiar('enlaceUnlim')">Copiar enlace</button>
+    <div id="tab-unlim" class="container active">
+      <h2>Generador de Enlace Unlimplay</h2>
+      <input type="text" id="videoIdUnlim" placeholder="Introduce el ID del video...">
+      <button onclick="generarUnlim()">Generar</button>
+      <div id="resultadoUnlim" class="result">
+        <p>Enlace generado: <span id="enlaceUnlim"></span>
+          <button class="copy-btn" onclick="copiar('enlaceUnlim')">Copiar</button>
+        </p>
       </div>
       <iframe id="visorUnlim" allowfullscreen></iframe>
     </div>
 
-    <!-- Contenido Reparador -->
-    <div class="container" id="tab-reparar">
-      <h2>🔧 Reparar Enlace</h2>
-      <div class="btn-group">
-        <button class="btn" id="btnStreamwish" onclick="seleccionarOpcion('streamwish')">Streamwish</button>
-        <button class="btn" id="btnVidhide" onclick="seleccionarOpcion('vidhide')">Vidhide</button>
+    <div id="tab-reparar" class="container">
+      <h2>Reparar Enlace</h2>
+      <div class="selector">
+        <button id="btnStreamwish" onclick="seleccionarOpcion('streamwish')">Streamwish</button>
+        <button id="btnVidhide" onclick="seleccionarOpcion('vidhide')">Vidhide</button>
       </div>
-      <input type="text" id="videoIdReparar" placeholder="Pega solo el ID...">
-      <button class="btn" onclick="repararEspecifico()">Reparar Enlace</button>
-      <div id="resultadoReparar" class="result-box">
-        <span id="enlaceReparado"></span><br>
-        <button class="btn" onclick="copiar('enlaceReparado')">Copiar enlace</button>
+      <input type="text" id="videoIdReparar" placeholder="Introduce el ID o enlace...">
+      <button onclick="repararEspecifico()">Reparar</button>
+      <div id="resultadoReparar" class="result">
+        <p>Enlace reparado: <span id="enlaceReparado"></span>
+          <button class="copy-btn" onclick="copiar('enlaceReparado')">Copiar</button>
+        </p>
       </div>
       <iframe id="visorReparar" allowfullscreen></iframe>
     </div>
@@ -189,49 +197,31 @@
     }
 
     function generarUnlim() {
-      const id = document.getElementById('videoIdUnlim').value.trim();
-      if (!id) {
-        alert('❗ Por favor, introduce un ID válido.');
-        return;
-      }
+      const id = obtenerId(document.getElementById('videoIdUnlim').value);
+      if (!id) return alert('Por favor, introduce un ID válido.');
       const enlace = `https://unlimplayer.top/embed/${id}`;
       actualizarUI(id, enlace, 'resultadoUnlim', 'enlaceUnlim', 'visorUnlim');
     }
 
-    // Variable para guardar la opción activa (streamwish o vidhide)
     let opcionActiva = null;
 
     function seleccionarOpcion(tipo) {
       opcionActiva = tipo;
-
-      // Actualizar estilos activos
       document.getElementById('btnStreamwish').classList.remove('active');
       document.getElementById('btnVidhide').classList.remove('active');
 
       if (tipo === 'streamwish') {
         document.getElementById('btnStreamwish').classList.add('active');
-      } else if (tipo === 'vidhide') {
+      } else {
         document.getElementById('btnVidhide').classList.add('active');
       }
-
-      // Limpiar resultados y visor cuando se cambia la opción
-      document.getElementById('resultadoReparar').style.display = 'none';
-      document.getElementById('visorReparar').src = '';
-      document.getElementById('videoIdReparar').value = '';
-      document.getElementById('enlaceReparado').innerText = '';
     }
 
     function repararEspecifico() {
-      const id = document.getElementById('videoIdReparar').value.trim();
-
-      if (!opcionActiva) {
-        alert('❗ Por favor, selecciona Streamwish o Vidhide antes de generar.');
-        return;
-      }
-      if (!id) {
-        alert('❗ Por favor, introduce un ID válido.');
-        return;
-      }
+      if (!opcionActiva) return alert('Selecciona una opción antes de reparar.');
+      const input = document.getElementById('videoIdReparar').value;
+      const id = obtenerId(input);
+      if (!id) return alert('Por favor, introduce un ID o enlace válido.');
 
       let enlace = '';
       if (opcionActiva === 'streamwish') {
@@ -243,27 +233,26 @@
       actualizarUI(id, enlace, 'resultadoReparar', 'enlaceReparado', 'visorReparar');
     }
 
+    function obtenerId(entrada) {
+      const partes = entrada.trim().split("/");
+      return partes[partes.length - 1].split(/[?#]/)[0];
+    }
+
     function actualizarUI(id, enlace, resId, spanId, visorId) {
       const resultado = document.getElementById(resId);
       const span = document.getElementById(spanId);
       const visor = document.getElementById(visorId);
 
-      if (id && enlace) {
-        span.innerText = enlace;
-        resultado.style.display = 'block';
-        visor.src = enlace;
-      } else {
-        span.innerText = '⚠️ Por favor, introduce un ID válido.';
-        visor.src = '';
-        resultado.style.display = 'block';
-      }
+      span.innerText = enlace;
+      visor.src = enlace;
+      resultado.style.display = 'block';
     }
 
-    function copiar(spanId) {
-      const texto = document.getElementById(spanId).innerText;
+    function copiar(id) {
+      const texto = document.getElementById(id).innerText;
       if (texto.startsWith('http')) {
         navigator.clipboard.writeText(texto).then(() => {
-          alert('✅ Enlace copiado al portapapeles');
+          alert('Enlace copiado al portapapeles');
         });
       }
     }
